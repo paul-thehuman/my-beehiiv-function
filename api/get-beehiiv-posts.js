@@ -25,6 +25,7 @@ export default async function handler(req, res) {
 
     if (!beehiivResponse.ok) {
       // If Beehiiv returns an error, pass it along
+      // This will give us a clear error like "Beehiiv API responded with status: 401"
       throw new Error(`Beehiiv API responded with status: ${beehiivResponse.status}`);
     }
 
@@ -35,7 +36,13 @@ export default async function handler(req, res) {
 
   } catch (error) {
     // Handle any errors during the fetch
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch posts from Beehiiv.' });
+    console.error(error); // This still logs the full error for Vercel
+
+    // --- THIS IS THE MODIFIED PART ---
+    // We are now sending the specific error message back to the browser for debugging.
+    res.status(500).json({ 
+        error: 'Failed to fetch posts from Beehiiv.',
+        details: error.message 
+    });
   }
 }
